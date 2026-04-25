@@ -1,12 +1,86 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
-import HorizontalCardSwiper from './HorizontalCardSwiper';
+import React, { useRef, useEffect, useState } from 'react';
+import DiagnosisView, { diagnosisPages } from './views/DiagnosisView';
 import RightActionBar from './RightActionBar';
 import './FeedContainer.css';
+import injuryPageOne from '../assets/injury/injury-1.png';
+import injuryPageTwo from '../assets/injury/injury-2.png';
+import alimentaryFallback from '../assets/hero.png';
 
-const VIDEO_SOURCES = [
-  "/videos/14785822_1080_1920_25fps.mp4",
-  "/videos/15192954_2160_3840_25fps.mp4"
+const alimentaryAssets = import.meta.glob('../assets/alimentary/*.{png,jpg,jpeg,webp}', {
+  eager: true,
+  import: 'default',
+  query: '?url'
+});
+
+const alimentaryPages = Object.entries(alimentaryAssets)
+  .sort(([firstPath], [secondPath]) => firstPath.localeCompare(secondPath))
+  .slice(0, 2)
+  .map(([, image], index) => ({
+    image,
+    label: `Alimentary page ${index + 1}`
+  }));
+
+const alimentaryFallbackPages = [
+  {
+    image: alimentaryFallback,
+    label: 'Alimentary page 1'
+  },
+  {
+    image: alimentaryFallback,
+    label: 'Alimentary page 2'
+  }
 ];
+
+const VIDEO_GROUPS = [
+  {
+    key: 'diagnosis',
+    videos: [
+      '/video/痛苦卧推/1.mp4',
+      '/video/痛苦卧推/download.mp4'
+    ],
+    pages: diagnosisPages
+  },
+  {
+    key: 'injury',
+    videos: [
+      '/video/没带护具健身/发现更多精彩视频 - 抖音搜索.mp4',
+      '/video/没带护具健身/2 - 抖音搜索.mp4'
+    ],
+    pages: [
+      {
+        image: injuryPageOne,
+        label: 'Injury page 1'
+      },
+      {
+        image: injuryPageTwo,
+        label: 'Injury page 2'
+      }
+    ]
+  },
+  {
+    key: 'alimentary',
+    videos: [
+      '/video/健身没效果/发现更多精彩视频 - 抖音搜索.mp4',
+      '/video/健身没效果/2 - 抖音搜索.mp4'
+    ],
+    pages: alimentaryPages.length >= 2 ? alimentaryPages : alimentaryFallbackPages
+  }
+];
+
+const buildFeedItems = () => VIDEO_GROUPS.flatMap((group) => [
+  ...group.videos.map((src, index) => ({
+    type: 'video',
+    src,
+    id: `${group.key}-video-${index + 1}`,
+    stats: generateRandomStats()
+  })),
+  ...group.pages.map((_, index) => ({
+    type: 'story',
+    id: `${group.key}-page-${index + 1}`,
+    page: index + 1,
+    pages: group.pages
+  }))
+]);
 
 // 独立的视频播放组件，利用 IntersectionObserver 优化性能
 const VideoPlayer = ({ src }) => {
@@ -63,167 +137,26 @@ const generateRandomStats = () => {
 };
 
 function FeedContainer() {
-  const containerRef = useRef(null);
-  const isScrolling = useRef(false);
-  const isAppending = useRef(false); 
-  const [items, setItems] = useState([]);
-
-  const appendItems = useCallback((count = 3) => {
-    if (isAppending.current) return;
-    isAppending.current = true;
-
-    setItems(prev => {
-      const startIndex = prev.length;
-      const cycleLength = VIDEO_SOURCES.length + 1; 
-      
-      const newItems = Array.from({ length: count }).map((_, i) => {
-        const index = startIndex + i;
-        const positionInCycle = index % cycleLength;
-        
-        if (positionInCycle < VIDEO_SOURCES.length) {
-          return {
-            type: 'video',
-            src: VIDEO_SOURCES[positionInCycle],
-            id: `item-${index}`,
-            stats: generateRandomStats()
-          };
-        } else {
-          return {
-            type: 'card',
-            id: `item-${index}-card`,
-            stats: generateRandomStats()
-          };
-        }
-      });
-      
-      return [...prev, ...newItems];
-    });
-
-    setTimeout(() => {
-      isAppending.current = false;
-    }, 500);
-  }, []);
-
-  // 初始化内容
-  useEffect(() => {
-    setItems(prev => {
-      if (prev.length > 0) return prev;
-      
-      const cycleLength = VIDEO_SOURCES.length + 1;
-      const initialCount = 4; 
-      
-      const initialItems = Array.from({ length: initialCount }).map((_, index) => {
-        const positionInCycle = index % cycleLength;
-        if (positionInCycle < VIDEO_SOURCES.length) {
-          return {
-            type: 'video',
-            src: VIDEO_SOURCES[positionInCycle],
-            id: `item-${index}`,
-            stats: generateRandomStats()
-          };
-        } else {
-          return {
-            type: 'card',
-            id: `item-${index}-card`,
-            stats: generateRandomStats()
-          };
-        }
-      });
-      
-      return initialItems;
-    });
-  }, []);
-
-  const scrollToNext = useCallback((direction) => {
-    const container = containerRef.current;
-    if (!container || isScrolling.current) return;
-
-    const scrollAmount = container.clientHeight;
-    isScrolling.current = true;
-    container.scrollBy({
-      top: direction * scrollAmount,
-      behavior: 'smooth'
-    });
-
-    setTimeout(() => {
-      isScrolling.current = false;
-    }, 600);
-  }, []);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const handleWheel = (e) => {
-      e.preventDefault();
-      scrollToNext(e.deltaY > 0 ? 1 : -1);
-    };
-
-    const handleKeyDown = (e) => {
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        scrollToNext(1);
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        scrollToNext(-1);
-      }
-    };
-
-    const handleScroll = () => {
-      if (container.scrollTop + container.clientHeight >= container.scrollHeight - 500) {
-        appendItems(3);
-      }
-    };
-
-    window.addEventListener('wheel', handleWheel, { passive: false });
-    window.addEventListener('keydown', handleKeyDown);
-    container.addEventListener('scroll', handleScroll);
-    
-    return () => {
-      window.removeEventListener('wheel', handleWheel);
-      window.removeEventListener('keydown', handleKeyDown);
-      container.removeEventListener('scroll', handleScroll);
-    };
-  }, [appendItems, scrollToNext]);
+  const [items] = useState(buildFeedItems);
 
   return (
-    <div className="feed-container" ref={containerRef}>
-      {items.map((item, index) => (
-        <div key={item.id} className={`feed-item ${item.type === 'card' ? 'our-card' : 'dummy-video'}`}>
+    <div className="feed-container">
+      {items.map((item) => (
+        <div key={item.id} className={`feed-item ${item.type === 'story' ? 'story-item' : 'dummy-video'}`}>
           <div className="video-wrapper">
             {item.type === 'video' ? (
-              <>
-                <VideoPlayer src={item.src} />
-                <div className="dummy-content-overlay" style={{
-                  position: 'absolute',
-                  bottom: '80px',
-                  left: '20px',
-                  pointerEvents: 'none'
-                }}>
-                  <p style={{ margin: 0, fontWeight: 'bold' }}>
-                    {index === 0 ? '向上滑动查看更多' : '随机视频'}
-                  </p>
-                </div>
-              </>
+              <VideoPlayer src={item.src} />
             ) : (
-              <HorizontalCardSwiper />
+              <DiagnosisView page={item.page} pages={item.pages} />
             )}
           </div>
-          <div className="item-actions">
-            <RightActionBar {...item.stats} />
-          </div>
+          {item.type === 'video' && (
+            <div className="item-actions">
+              <RightActionBar {...item.stats} />
+            </div>
+          )}
         </div>
       ))}
-
-      {/* 悬浮导航按钮 */}
-      <div className="navigation-arrows">
-        <button className="nav-arrow" onClick={() => scrollToNext(-1)} title="Previous">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 10.8L7.1 15.7L5.7 14.3L12 8L18.3 14.3L16.9 15.7z"/></svg>
-        </button>
-        <button className="nav-arrow" onClick={() => scrollToNext(1)} title="Next">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 13.2L16.9 8.3L18.3 9.7L12 16L5.7 9.7L7.1 8.3z"/></svg>
-        </button>
-      </div>
     </div>
   );
 }
