@@ -1,0 +1,97 @@
+.horizontal-swiper-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background-color: #111;
+}
+
+.zuiti-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #2c001e 0%, #000000 100%);
+  z-index: 10;
+  transition: opacity 0.5s ease, pointer-events 0s linear 0.5s;
+  cursor: pointer;
+  padding: 20px;
+  text-align: center;
+}
+
+.zuiti-overlay.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.zuiti-content h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #fff;
+  line-height: 1.4;
+  margin-bottom: 20px;
+}
+
+.hint {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.2rem;
+  animation: bounce 1.5s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.swiper-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.swiper-track::-webkit-scrollbar {
+  display: none;
+}
+
+.swiper-track.active {
+  opacity: 1;
+}
+
+.swiper-slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  scroll-snap-align: start;
+  position: relative;
+}
+
+.pagination-dots {
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.dot {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9rem;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 5px 12px;
+  border-radius: 20px;
+}

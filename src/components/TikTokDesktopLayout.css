@@ -1,0 +1,144 @@
+.desktop-layout {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  background-color: #0f0f0f; /* Slightly lighter than pure black for depth */
+  overflow: hidden;
+}
+
+.main-content-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  height: 100vh;
+}
+
+.top-header {
+  height: 60px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 24px;
+  position: relative;
+  z-index: 100; /* Ensure header stays on top of enlarged video */
+}
+
+.header-pill {
+  display: flex;
+  align-items: center;
+  background-color: #252525;
+  border-radius: 100px;
+  padding: 4px 4px 4px 16px;
+  gap: 12px;
+}
+
+.pill-icon-btn {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.9;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.pill-icon-btn:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.pill-divider {
+  width: 1px;
+  height: 24px;
+  background-color: rgba(255, 255, 255, 0.12);
+  margin: 0 4px;
+}
+
+.pill-primary-btn {
+  background-color: #fe2c55;
+  color: white;
+  border: none;
+  border-radius: 100px;
+  padding: 8px 24px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.pill-primary-btn:hover {
+  background-color: #e0244b;
+}
+
+.feed-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-right: 250px; /* Balance the 250px sidebar on the left */
+  pointer-events: none; /* Allow header interactions through */
+}
+
+.video-player-container {
+  height: calc(100vh - 20px); /* Even larger! */
+  width: 100%;
+  max-width: 1200px;
+  background-color: transparent;
+  position: relative;
+  isolation: isolate; 
+  pointer-events: auto; /* Re-enable pointer events for the player */
+}
+
+/* Removed old right-controls positioning as it's now internal to feed items */
+
+.navigation-arrows {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.nav-arrow {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.nav-arrow:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Make inner scrollable containers fill the rounded desktop player */
+.feed-container, .horizontal-swiper-container {
+  width: 100%;
+  height: 100%;
+}
+
+.feed-item {
+  width: 100%;
+  height: 100%;
+}
+
+.swiper-slide {
+  width: 100%;
+  flex: 0 0 100%;
+}

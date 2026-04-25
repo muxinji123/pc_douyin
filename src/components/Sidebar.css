@@ -1,0 +1,142 @@
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background-color: #000;
+  color: #fff;
+  padding: 20px 0 20px 20px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.logo-area {
+  margin-bottom: 20px;
+  padding-left: 8px;
+}
+
+.logo-text {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background-color: #222;
+  border-radius: 20px;
+  padding: 10px 16px;
+  margin-right: 20px;
+  margin-bottom: 24px;
+}
+
+.search-icon {
+  color: #888;
+  font-size: 14px;
+  margin-right: 10px;
+}
+
+.search-input {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  outline: none;
+  width: 100%;
+}
+
+.search-input::placeholder {
+  color: #888;
+}
+
+.nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 24px;
+  padding-right: 20px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: background-color 0.2s;
+}
+
+.nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.nav-item.active {
+  color: #fe2c55;
+  background-color: #1a1a1a;
+}
+
+.nav-item .icon {
+  margin-right: 16px;
+  font-size: 1.4rem;
+  width: 24px;
+  text-align: center;
+}
+
+.login-prompt {
+  margin-bottom: 24px;
+  padding-right: 20px;
+}
+
+.primary-btn {
+  width: 100%;
+  background-color: #fe2c55;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.primary-btn:hover {
+  background-color: #e62a4d;
+}
+
+.divider {
+  height: 1px;
+  background-color: #222;
+  margin-right: 20px;
+  margin-bottom: 20px;
+}
+
+.footer-links {
+  margin-top: auto;
+  font-size: 0.85rem;
+  color: #888;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-right: 20px;
+}
+
+.footer-links p {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.footer-links p:hover {
+  text-decoration: underline;
+}
+
+.copyright {
+  margin-top: 10px;
+  font-weight: 400 !important;
+}
