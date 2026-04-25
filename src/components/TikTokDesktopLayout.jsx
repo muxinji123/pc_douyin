@@ -35,11 +35,6 @@ function TikTokDesktopLayout() {
           <div className="video-player-container">
             <FeedContainer />
           </div>
-          
-          <div className="navigation-arrows">
-            <button className="nav-arrow">ᐱ</button>
-            <button className="nav-arrow">ᐯ</button>
-          </div>
         </div>
       </main>
     </div>

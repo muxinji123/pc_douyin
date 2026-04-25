@@ -44,10 +44,28 @@ const VideoPlayer = ({ src }) => {
   );
 };
 
+// 辅助函数：生成随机点赞数据和头像
+const generateRandomStats = () => {
+  const formatNum = (num) => {
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+    return num.toString();
+  };
+  
+  const avatars = ['💪', '🏋️', '🏃', '🚴', '🏊', '🤸', '🧘', '🥊', '🔥', '✨', '⚡'];
+  
+  return {
+    avatar: avatars[Math.floor(Math.random() * avatars.length)],
+    likes: formatNum(Math.floor(Math.random() * 500000) + 1000),
+    comments: formatNum(Math.floor(Math.random() * 10000) + 100),
+    bookmarks: formatNum(Math.floor(Math.random() * 50000) + 500),
+    shares: formatNum(Math.floor(Math.random() * 20000) + 200)
+  };
+};
+
 function FeedContainer() {
   const containerRef = useRef(null);
   const isScrolling = useRef(false);
-  const isAppending = useRef(false); // 防止重复触发追加
+  const isAppending = useRef(false); 
   const [items, setItems] = useState([]);
 
   const appendItems = useCallback((count = 3) => {
@@ -56,7 +74,7 @@ function FeedContainer() {
 
     setItems(prev => {
       const startIndex = prev.length;
-      const cycleLength = VIDEO_SOURCES.length + 1; // n个视频 + 1个卡片
+      const cycleLength = VIDEO_SOURCES.length + 1; 
       
       const newItems = Array.from({ length: count }).map((_, i) => {
         const index = startIndex + i;
@@ -65,13 +83,15 @@ function FeedContainer() {
         if (positionInCycle < VIDEO_SOURCES.length) {
           return {
             type: 'video',
-            src: VIDEO_SOURCES[positionInCycle], // 严格按照数组顺序取视频
-            id: `item-${index}` // 基于位置的稳定ID
+            src: VIDEO_SOURCES[positionInCycle],
+            id: `item-${index}`,
+            stats: generateRandomStats()
           };
         } else {
           return {
             type: 'card',
-            id: `item-${index}-card`
+            id: `item-${index}-card`,
+            stats: generateRandomStats()
           };
         }
       });
@@ -79,7 +99,6 @@ function FeedContainer() {
       return [...prev, ...newItems];
     });
 
-    // 延迟重置追加锁，等待DOM渲染更新高度
     setTimeout(() => {
       isAppending.current = false;
     }, 500);
@@ -87,11 +106,9 @@ function FeedContainer() {
 
   // 初始化内容
   useEffect(() => {
-    // 确保只初始化一次
     setItems(prev => {
       if (prev.length > 0) return prev;
       
-      // 首次加载一整个循环（视频1、视频2、卡片），加一个预加载的视频1
       const cycleLength = VIDEO_SOURCES.length + 1;
       const initialCount = 4; 
       
@@ -101,12 +118,14 @@ function FeedContainer() {
           return {
             type: 'video',
             src: VIDEO_SOURCES[positionInCycle],
-            id: `item-${index}`
+            id: `item-${index}`,
+            stats: generateRandomStats()
           };
         } else {
           return {
             type: 'card',
-            id: `item-${index}-card`
+            id: `item-${index}-card`,
+            stats: generateRandomStats()
           };
         }
       });
@@ -115,21 +134,32 @@ function FeedContainer() {
     });
   }, []);
 
+  const scrollToNext = useCallback((direction) => {
+    const container = containerRef.current;
+    if (!container || isScrolling.current) return;
+
+    const scrollAmount = container.clientHeight;
+    isScrolling.current = true;
+    container.scrollBy({
+      top: direction * scrollAmount,
+      behavior: 'smooth'
+    });
+
+    setTimeout(() => {
+      isScrolling.current = false;
+    }, 600);
+  }, []);
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
     const handleWheel = (e) => {
       e.preventDefault();
-      if (isScrolling.current) return;
-
-      const direction = e.deltaY > 0 ? 1 : -1;
-      scrollToNext(direction);
+      scrollToNext(e.deltaY > 0 ? 1 : -1);
     };
 
     const handleKeyDown = (e) => {
-      if (isScrolling.current) return;
-      
       if (e.key === 'ArrowDown') {
         e.preventDefault();
         scrollToNext(1);
@@ -140,23 +170,9 @@ function FeedContainer() {
     };
 
     const handleScroll = () => {
-      // 如果距离底部小于 500px，追加视频
       if (container.scrollTop + container.clientHeight >= container.scrollHeight - 500) {
         appendItems(3);
       }
-    };
-
-    const scrollToNext = (direction) => {
-      const scrollAmount = container.clientHeight;
-      isScrolling.current = true;
-      container.scrollBy({
-        top: direction * scrollAmount,
-        behavior: 'smooth'
-      });
-
-      setTimeout(() => {
-        isScrolling.current = false;
-      }, 600);
     };
 
     window.addEventListener('wheel', handleWheel, { passive: false });
@@ -168,7 +184,7 @@ function FeedContainer() {
       window.removeEventListener('keydown', handleKeyDown);
       container.removeEventListener('scroll', handleScroll);
     };
-  }, [appendItems]);
+  }, [appendItems, scrollToNext]);
 
   return (
     <div className="feed-container" ref={containerRef}>
@@ -194,10 +210,20 @@ function FeedContainer() {
             )}
           </div>
           <div className="item-actions">
-            <RightActionBar />
+            <RightActionBar {...item.stats} />
           </div>
         </div>
       ))}
+
+      {/* 悬浮导航按钮 */}
+      <div className="navigation-arrows">
+        <button className="nav-arrow" onClick={() => scrollToNext(-1)} title="Previous">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 10.8L7.1 15.7L5.7 14.3L12 8L18.3 14.3L16.9 15.7z"/></svg>
+        </button>
+        <button className="nav-arrow" onClick={() => scrollToNext(1)} title="Next">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 13.2L16.9 8.3L18.3 9.7L12 16L5.7 9.7L7.1 8.3z"/></svg>
+        </button>
+      </div>
     </div>
   );
 }

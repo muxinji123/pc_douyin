@@ -84,14 +84,29 @@
   display: flex;
   justify-content: center;
   gap: 15px;
-  z-index: 5;
-  pointer-events: none;
+  z-index: 20; /* Ensure dots are above swiper */
+  pointer-events: auto; /* Enable clicking dots */
 }
 
 .dot {
   color: rgba(255, 255, 255, 0.5);
   font-size: 0.9rem;
-  background: rgba(0, 0, 0, 0.5);
-  padding: 5px 12px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 6px 14px;
   border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.dot.active {
+  color: #fff;
+  background: #2b7fff;
+  box-shadow: 0 0 15px rgba(43, 127, 255, 0.4);
+  font-weight: 600;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.dot:hover {
+  background: rgba(43, 127, 255, 0.2);
 }
