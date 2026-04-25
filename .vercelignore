@@ -132,20 +132,3 @@ Thumbs.db
 
 # Agent skills
 .agents/
-
-# Media and Large Files
-*.mp4
-*.webm
-*.ogg
-*.mov
-*.avi
-*.mkv
-public/videos/
-public/video/
-videos/
-**/videos/
-**/video/
-*.zip
-*.tar.gz
-*.rar
-.vercel

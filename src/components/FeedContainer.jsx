@@ -82,22 +82,20 @@ const buildFeedItems = () => VIDEO_GROUPS.flatMap((group) => [
   }))
 ]);
 
-// 独立的视频播放组件，利用 IntersectionObserver 优化性能
-const VideoPlayer = ({ src }) => {
+// 独立的视频播放组件
+const VideoPlayer = ({ src, isMuted, onToggleMute }) => {
   const videoRef = useRef(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          // 在视野内才播放
           videoRef.current?.play().catch(() => {});
         } else {
-          // 离开视野就暂停
           videoRef.current?.pause();
         }
       });
-    }, { threshold: 0.6 }); // 当视频有60%可见时触发
+    }, { threshold: 0.6 });
 
     if (videoRef.current) {
       observer.observe(videoRef.current);
@@ -106,15 +104,29 @@ const VideoPlayer = ({ src }) => {
     return () => observer.disconnect();
   }, []);
 
+  // 当全局静音状态改变时，同步更新视频元素
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = isMuted;
+    }
+  }, [isMuted]);
+
   return (
-    <video
-      ref={videoRef}
-      src={src}
-      loop
-      muted
-      playsInline
-      preload="metadata" // 仅预加载元数据，避免同时下载大量视频导致卡顿
-    />
+    <div className="video-container-inner" onClick={onToggleMute} style={{ width: '100%', height: '100%', cursor: 'pointer' }}>
+      <video
+        ref={videoRef}
+        src={src}
+        loop
+        muted={isMuted}
+        playsInline
+        preload="metadata"
+      />
+      {isMuted && (
+        <div className="mute-indicator">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="white" d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63m2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71M4.27 3L3 4.27L7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21L21 19.73l-9-9zM12 4L9.91 6.09L12 8.18z"/></svg>
+        </div>
+      )}
+    </div>
   );
 };
 
@@ -137,15 +149,47 @@ const generateRandomStats = () => {
 };
 
 function FeedContainer() {
-  const [items] = useState(buildFeedItems);
+  const [items, setItems] = useState(buildFeedItems());
+  const [isMuted, setIsMuted] = useState(true);
+  const containerRef = useRef(null);
+
+  const toggleMute = () => {
+    setIsMuted(prev => !prev);
+  };
+
+  // 实现无限滚动逻辑
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      // 当滚动到距离底部还有 500px 时，追加新的一组数据
+      if (container.scrollTop + container.clientHeight >= container.scrollHeight - 500) {
+        setItems(prev => {
+          const newSet = buildFeedItems().map(item => ({
+            ...item,
+            id: `${item.id}-${prev.length}` // 确保 ID 唯一
+          }));
+          return [...prev, ...newSet];
+        });
+      }
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    <div className="feed-container">
+    <div className="feed-container" ref={containerRef}>
       {items.map((item) => (
         <div key={item.id} className={`feed-item ${item.type === 'story' ? 'story-item' : 'dummy-video'}`}>
           <div className="video-wrapper">
             {item.type === 'video' ? (
-              <VideoPlayer src={item.src} />
+              <VideoPlayer 
+                src={item.src} 
+                isMuted={isMuted} 
+                onToggleMute={toggleMute}
+              />
             ) : (
               <DiagnosisView page={item.page} pages={item.pages} />
             )}
