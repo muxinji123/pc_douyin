@@ -22,3 +22,52 @@
     min-height: 100dvh;
   }
 }
+
+.hitboxes-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+}
+
+.order-hitbox {
+  position: absolute;
+  cursor: pointer;
+  /* background-color: rgba(255, 0, 0, 0.3); */ /* 取消注释可以辅助调试位置 */
+  width: 26%;
+  height: 4%;
+  top: 82.2%;
+  border-radius: 20px;
+}
+
+.coach-1 { left: 6.5%; }
+.coach-2 { left: 36.5%; }
+.coach-3 { left: 66.5%; }
+
+/* 装备页面的点击热区 */
+.equip-hitbox {
+  position: absolute;
+  cursor: pointer;
+  /* background-color: rgba(255, 142, 41, 0.4); */ /* 调试已完成，移除背景色 */
+  width: 14%; 
+  height: 3.5%; 
+  left: 79.5%; 
+  border-radius: 8px;
+}
+
+.item-a { top: 71.8%; }
+.item-b { top: 79.3%; }
+.item-c { top: 86.8%; }
+
+/* 营养页面的点击热区 */
+.alimentary-hitbox {
+  position: absolute;
+  cursor: pointer;
+  /* background-color: rgba(0, 100, 255, 0.4); */ /* 调试已完成，移除背景色 */
+  width: 14%;
+  height: 3.5%;
+  left: 76.8%;
+  border-radius: 20px;
+}
+
+.food-a { top: 75.6%; }
+.food-b { top: 88.0%; }

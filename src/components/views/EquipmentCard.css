@@ -1,0 +1,110 @@
+.equipment-card-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(15px);
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.equipment-card-container {
+  width: 85%;
+  max-width: 380px;
+  background: white;
+  border-radius: 24px;
+  padding: 40px 24px 24px;
+  position: relative;
+  color: #333;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.equipment-card-container .back-btn {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background: #f5f5f5;
+  border: none;
+  color: #666;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.header-tag {
+  display: inline-block;
+  background: #fff0f0;
+  color: #fe2c55;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 100px;
+  margin-bottom: 20px;
+}
+
+.equipment-icon {
+  font-size: 50px;
+  margin-bottom: 12px;
+}
+
+.equipment-main h2 {
+  font-size: 22px;
+  margin: 0;
+  color: #1a1a1a;
+}
+
+.subtitle {
+  color: #999;
+  font-size: 14px;
+  margin: 8px 0 24px;
+}
+
+.promo-box {
+  background: #fafafa;
+  border: 1px dashed #fe2c55;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.discount {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.price {
+  color: #fe2c55;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.tips {
+  font-size: 12px;
+  color: #ff8e29;
+  margin: 8px 0 0;
+}
+
+.buy-btn {
+  width: 100%;
+  background: linear-gradient(90deg, #ff8e29, #fe2c55);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(254, 44, 85, 0.3);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}

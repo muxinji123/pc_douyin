@@ -132,3 +132,7 @@ Thumbs.db
 
 # Agent skills
 .agents/
+
+# Force include videos for Vercel CLI deployment
+!public/video/
+!public/videos/
